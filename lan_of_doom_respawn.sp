@@ -55,6 +55,7 @@ static void Respawn(int userid) {
 static Action OnPlayerClass(Event event, const char[] name,
                             bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerClass %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -76,6 +77,7 @@ static Action OnPlayerClass(Event event, const char[] name,
 static Action OnPlayerDeath(Event event, const char[] name,
                             bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerDeath %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -93,6 +95,7 @@ static Action OnPlayerDeath(Event event, const char[] name,
 static Action OnPlayerTeam(Event event, const char[] name,
                            bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerTeam %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
