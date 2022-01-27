@@ -31,7 +31,7 @@ static Action TimerElapsed(Handle timer, any userid) {
 
   int team = GetClientTeam(client);
   if (team != CS_TEAM_T && team != CS_TEAM_CT) {
-    return Plugin_Stop;
+    return Plugin_Continue;
   }
 
   CS_RespawnPlayer(client);
@@ -39,51 +39,34 @@ static Action TimerElapsed(Handle timer, any userid) {
   return Plugin_Stop;
 }
 
-static void Respawn(int userid) {
+static float GetRespawnTime() {
   float time = GetConVarFloat(g_respawn_time_cvar);
   if (time < 0.0) {
     time = 0.0;
   }
 
+  return time;
+}
+
+static void Respawn(int userid) {
+  float time = GetRespawnTime();
   CreateTimer(time, TimerElapsed, userid, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+static void RespawnRepeat(int userid) {
+  float time = GetRespawnTime();
+  CreateTimer(time, TimerElapsed, userid,
+              TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 }
 
 //
 // Hooks
 //
 
-static Action OnPlayerClass(Event event, const char[] name,
-                            bool dont_broadcast) {
-  int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerClass %d", userid);
-  if (!userid) {
-    return Plugin_Continue;
-  }
-
-  int client = GetClientOfUserId(userid);
-  if (!client) {
-    return Plugin_Continue;
-  }
-
-  if (IsFakeClient(client)) {
-    return Plugin_Continue;
-  }
-
-  Respawn(userid);
-
-  return Plugin_Continue;
-}
-
 static Action OnPlayerDeath(Event event, const char[] name,
                             bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerDeath %d", userid);
   if (!userid) {
-    return Plugin_Continue;
-  }
-
-  int client = GetClientOfUserId(userid);
-  if (!client) {
     return Plugin_Continue;
   }
 
@@ -95,21 +78,11 @@ static Action OnPlayerDeath(Event event, const char[] name,
 static Action OnPlayerTeam(Event event, const char[] name,
                            bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerTeam %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
 
-  int client = GetClientOfUserId(userid);
-  if (!client) {
-    return Plugin_Continue;
-  }
-
-  if (!IsFakeClient(client)) {
-    return Plugin_Continue;
-  }
-
-  CS_RespawnPlayer(client);
+  RespawnRepeat(userid);
 
   return Plugin_Continue;
 }
@@ -138,7 +111,6 @@ public void OnPluginStart() {
       CreateConVar("sm_lanofdoom_respawn_time", "2.0",
                    "Time in seconds after which dead players will respawn.");
 
-  HookEvent("player_class", OnPlayerClass);
   HookEvent("player_death", OnPlayerDeath);
   HookEvent("player_team", OnPlayerTeam);
   HookEvent("round_end", OnRoundEnd);
