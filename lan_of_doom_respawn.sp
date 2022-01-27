@@ -1,8 +1,7 @@
 #include <cstrike>
 #include <sourcemod>
 
-public
-const Plugin myinfo = {
+public const Plugin myinfo = {
     name = "Player Respawn", author = "LAN of DOOM",
     description = "Enables player respawn after death", version = "1.0.0",
     url = "https://github.com/lanofdoom/counterstrike-respawn"};
@@ -13,12 +12,20 @@ static ConVar g_respawn_time_cvar;
 static bool g_between_rounds = false;
 static ArrayList g_respawn_timers;
 
+static bool g_first_spawn[MAXPLAYERS + 1] = {
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false};
+
 //
 // Logic
 //
 
 static Action TimerElapsed(Handle timer, any userid) {
-  PrintToServer("TimerElapsed %d", userid);
   if (!GetConVarBool(g_respawn_enabled_cvar)) {
     g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
@@ -90,7 +97,6 @@ static Action OnPlayerDeath(Event event, const char[] name,
   }
 
   int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerDeath %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -112,9 +118,12 @@ static Action OnPlayerSpawn(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  PrintToServer("OnPlayerSpawn %d", userid);
+  if (g_first_spawn[client]) {
+    g_first_spawn[client] = false;
+    return Plugin_Continue;
+  }
+
   if (IsPlayerAlive(client)) {
-    PrintToServer("OnPlayerSpawn %d Alive", userid);
     CancelRespawn(userid);
   }
 
@@ -133,7 +142,6 @@ static Action OnPlayerTeam(Event event, const char[] name,
   }
 
   int team = GetEventInt(event, "team");
-  PrintToServer("OnPlayerTeam %d %d", userid, team);
   if (team != CS_TEAM_T && team != CS_TEAM_CT) {
     return Plugin_Continue;
   }
@@ -159,11 +167,16 @@ static Action OnRoundStart(Event event, const char[] name,
 // Forwards
 //
 
-public
-void OnMapEnd() { g_respawn_timers.Clear(); }
+public void OnMapEnd() {
+  for (int client = 0; client < MAXPLAYERS + 1; client++) {
+    g_first_spawn[client] = false;
+  }
+  g_respawn_timers.Clear();
+}
 
-public
-void OnPluginStart() {
+public void OnClientPutInServer(int client) { g_first_spawn[client] = true; }
+
+public void OnPluginStart() {
   g_respawn_enabled_cvar =
       CreateConVar("sm_lanofdoom_respawn_enabled", "1",
                    "If true, players respawn after death.");
