@@ -106,9 +106,7 @@ static Action OnPlayerSpawn(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  if (IsPlayerAlive(client)) {
-    CancelRespawn(userid);
-  }
+  CancelRespawn(userid);
 
   return Plugin_Continue;
 }
@@ -172,5 +170,5 @@ public void OnPluginStart() {
   HookEvent("player_spawn", OnPlayerSpawn);
   HookEvent("player_team", OnPlayerTeam);
   HookEvent("round_end", OnRoundEnd);
-  HookEvent("round_Start", OnRoundStart);
+  HookEvent("round_start", OnRoundStart);
 }
