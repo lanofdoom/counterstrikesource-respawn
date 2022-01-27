@@ -30,7 +30,7 @@ static Action TimerElapsed(Handle timer, any userid) {
   }
 
   int team = GetClientTeam(client);
-  if (team != CS_TEAM_T || team != CS_TEAM_CT) {
+  if (team != CS_TEAM_T && team != CS_TEAM_CT) {
     return Plugin_Stop;
   }
 
