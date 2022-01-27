@@ -1,7 +1,8 @@
 #include <cstrike>
 #include <sourcemod>
 
-public const Plugin myinfo = {
+public
+const Plugin myinfo = {
     name = "Player Respawn", author = "LAN of DOOM",
     description = "Enables player respawn after death", version = "1.0.0",
     url = "https://github.com/lanofdoom/counterstrike-respawn"};
@@ -17,27 +18,30 @@ static ArrayList g_respawn_timers;
 //
 
 static Action TimerElapsed(Handle timer, any userid) {
-  g_respawn_timers.Set(userid, INVALID_HANDLE);
-
   if (!GetConVarBool(g_respawn_enabled_cvar)) {
+    g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
   int client = GetClientOfUserId(userid);
   if (!client) {
+    g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
   if (!IsClientInGame(client) || IsPlayerAlive(client)) {
+    g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
   int team = GetClientTeam(client);
   if (team != CS_TEAM_T && team != CS_TEAM_CT) {
-    return Plugin_Stop;
+    return Plugin_Continue;
   }
 
   CS_RespawnPlayer(client);
+
+  g_respawn_timers.Set(userid, INVALID_HANDLE);
 
   return Plugin_Stop;
 }
@@ -69,8 +73,8 @@ static void Respawn(int userid) {
     time = 0.0;
   }
 
-  Handle timer =
-      CreateTimer(time, TimerElapsed, userid, TIMER_FLAG_NO_MAPCHANGE);
+  Handle timer = CreateTimer(time, TimerElapsed, userid,
+                             TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
   g_respawn_timers.Set(userid, timer);
 }
 
@@ -148,9 +152,11 @@ static Action OnRoundStart(Event event, const char[] name,
 // Forwards
 //
 
-public void OnMapEnd() { g_respawn_timers.Clear(); }
+public
+void OnMapEnd() { g_respawn_timers.Clear(); }
 
-public void OnPluginStart() {
+public
+void OnPluginStart() {
   g_respawn_enabled_cvar =
       CreateConVar("sm_lanofdoom_respawn_enabled", "1",
                    "If true, players respawn after death.");
