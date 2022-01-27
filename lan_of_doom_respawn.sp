@@ -127,12 +127,7 @@ static Action OnPlayerTeam(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  int client = GetClientOfUserId(userid);
-  if (client && IsFakeClient(client)) {
-    CS_RespawnPlayer(client);
-  } else {
-    Respawn(userid);
-  }
+  Respawn(userid);
 
   return Plugin_Continue;
 }
