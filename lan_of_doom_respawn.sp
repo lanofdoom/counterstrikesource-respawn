@@ -103,7 +103,6 @@ static Action OnPlayerDeath(Event event, const char[] name,
 static Action OnPlayerSpawn(Event event, const char[] name,
                             bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerSpawn %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -113,7 +112,9 @@ static Action OnPlayerSpawn(Event event, const char[] name,
     return Plugin_Continue;
   }
 
+  PrintToServer("OnPlayerSpawn %d", userid);
   if (IsPlayerAlive(client)) {
+    PrintToServer("OnPlayerSpawn %d Alive", userid);
     CancelRespawn(userid);
   }
 
@@ -127,12 +128,12 @@ static Action OnPlayerTeam(Event event, const char[] name,
   }
 
   int userid = GetEventInt(event, "userid");
-  PrintToServer("OnPlayerTeam %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
 
   int team = GetEventInt(event, "team");
+  PrintToServer("OnPlayerTeam %d %d", userid, team);
   if (team != CS_TEAM_T && team != CS_TEAM_CT) {
     return Plugin_Continue;
   }
