@@ -113,11 +113,13 @@ static Action OnPlayerTeam(Event event, const char[] name,
 
 static Action OnRoundEnd(Event event, const char[] name, bool dont_broadcast) {
   g_between_rounds = true;
+  return Plugin_Continue;
 }
 
 static Action OnRoundStart(Event event, const char[] name,
                            bool dont_broadcast) {
   g_between_rounds = false;
+  return Plugin_Continue;
 }
 
 //
