@@ -101,7 +101,14 @@ static Action OnPlayerSpawn(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  CancelRespawn(userid);
+  int client = GetClientOfUserId(userid);
+  if (!client) {
+    return Plugin_Continue;
+  }
+
+  if (IsPlayerAlive(client)) {
+    CancelRespawn(userid);
+  }
 
   return Plugin_Continue;
 }
