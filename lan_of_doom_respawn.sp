@@ -18,6 +18,7 @@ static ArrayList g_respawn_timers;
 //
 
 static Action TimerElapsed(Handle timer, any userid) {
+  PrintToServer("TimerElapsed %d", userid);
   if (!GetConVarBool(g_respawn_enabled_cvar)) {
     g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
@@ -89,6 +90,7 @@ static Action OnPlayerDeath(Event event, const char[] name,
   }
 
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerDeath %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -101,6 +103,7 @@ static Action OnPlayerDeath(Event event, const char[] name,
 static Action OnPlayerSpawn(Event event, const char[] name,
                             bool dont_broadcast) {
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerSpawn %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
@@ -124,6 +127,7 @@ static Action OnPlayerTeam(Event event, const char[] name,
   }
 
   int userid = GetEventInt(event, "userid");
+  PrintToServer("OnPlayerTeam %d", userid);
   if (!userid) {
     return Plugin_Continue;
   }
