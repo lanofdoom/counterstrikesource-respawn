@@ -18,32 +18,27 @@ static ArrayList g_respawn_timers;
 //
 
 static Action TimerElapsed(Handle timer, any userid) {
-  PrintToServer("TimerElapsed 0 %d", userid);
   if (!GetConVarBool(g_respawn_enabled_cvar)) {
     g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
-  PrintToServer("TimerElapsed 1 %d", userid);
   int client = GetClientOfUserId(userid);
   if (!client) {
     g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
-  PrintToServer("TimerElapsed 2 %d", userid);
   if (!IsClientInGame(client) || IsPlayerAlive(client)) {
     g_respawn_timers.Set(userid, INVALID_HANDLE);
     return Plugin_Stop;
   }
 
-  PrintToServer("TimerElapsed 3 %d", userid);
   int team = GetClientTeam(client);
   if (team != CS_TEAM_T && team != CS_TEAM_CT) {
     return Plugin_Continue;
   }
 
-  PrintToServer("TimerElapsed 4 %d", userid);
   CS_RespawnPlayer(client);
 
   g_respawn_timers.Set(userid, INVALID_HANDLE);
@@ -115,7 +110,9 @@ static Action OnPlayerSpawn(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  CancelRespawn(userid);
+  if (IsPlayerAlive(client)) {
+    CancelRespawn(userid);
+  }
 
   return Plugin_Continue;
 }
@@ -136,7 +133,6 @@ static Action OnPlayerTeam(Event event, const char[] name,
     return Plugin_Continue;
   }
 
-  PrintToServer("PlayerTeam %d", userid);
   Respawn(userid);
 
   return Plugin_Continue;
