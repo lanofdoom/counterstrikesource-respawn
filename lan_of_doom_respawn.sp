@@ -89,7 +89,7 @@ static void Respawn(int userid) {
 }
 
 static bool WholeTeamDead(int team) {
-  for (int client = 0; client < MaxClients; client++) {
+  for (int client = 1; client < MaxClients; client++) {
     if (IsClientInGame(client) && IsPlayerAlive(client) &&
         team == GetClientTeam(client)) {
       return false;
