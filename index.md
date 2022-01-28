@@ -1,6 +1,6 @@
 ## Releases
 
-* [Latest](https://lanofdoom.github.io/counterstrike-respawn/releases/latest/lan_of_doom_respawn.tar.gz) ([Source](https://lanofdoom.github.io/counterstrike-respawn/releases/latest/lan_of_doom_respawn_source.tar.gz)) (1.1.0)
+* [Latest](https://lanofdoom.github.io/counterstrike-respawn/releases/latest/lan_of_doom_respawn.tar.gz) ([Source](https://lanofdoom.github.io/counterstrike-respawn/releases/latest/lan_of_doom_respawn_source.tar.gz)) (1.1.1)
 * [Nightly](https://lanofdoom.github.io/counterstrike-respawn/releases/nightly/lan_of_doom_respawn.tar.gz) ([Source](https://lanofdoom.github.io/counterstrike-respawn/releases/nightly/lan_of_doom_respawn_source.tar.gz))
 
 ## Installation
@@ -15,6 +15,8 @@ default.
 respawn. 
 
 ## Version History
+### 1.1.1 ([Download](https://lanofdoom.github.io/counterstrike-respawn/releases/v1.1.1/lan_of_doom_respawn.tar.gz)) ([Source](https://lanofdoom.github.io/counterstrike-respawn/releases/v1.1.1/lan_of_doom_respawn_source.tar.gz)) 
+* Fix round end when plugin is disabled
 
 ### 1.1.0 ([Download](https://lanofdoom.github.io/counterstrike-respawn/releases/v1.1.0/lan_of_doom_respawn.tar.gz)) ([Source](https://lanofdoom.github.io/counterstrike-respawn/releases/v1.1.0/lan_of_doom_respawn_source.tar.gz)) 
 * Skip server triggered round end if all players are dead
