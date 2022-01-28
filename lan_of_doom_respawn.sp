@@ -205,13 +205,19 @@ static Action OnRoundStart(Event event, const char[] name,
 //
 
 public Action CS_OnTerminateRound(float& delay, CSRoundEndReason& reason) {
+  if (!GetConVarBool(g_respawn_enabled_cvar)) {
+    g_skip_ct_wins_round_end = false;
+    g_skip_t_wins_round_end = false;
+    return Plugin_Continue;
+  }
+
   if (reason == CSRoundEnd_CTWin && g_skip_ct_wins_round_end) {
     g_skip_ct_wins_round_end = false;
     return Plugin_Stop;
   }
 
   if (reason == CSRoundEnd_TerroristWin && g_skip_t_wins_round_end) {
-    g_skip_ct_wins_round_end = false;
+    g_skip_t_wins_round_end = false;
     return Plugin_Stop;
   }
 
