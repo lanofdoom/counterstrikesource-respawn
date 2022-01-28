@@ -3,13 +3,15 @@
 
 public const Plugin myinfo = {
     name = "Player Respawn", author = "LAN of DOOM",
-    description = "Enables player respawn after death", version = "1.0.0",
+    description = "Enables player respawn after death", version = "1.1.0",
     url = "https://github.com/lanofdoom/counterstrike-respawn"};
 
 static ConVar g_respawn_enabled_cvar;
 static ConVar g_respawn_time_cvar;
 
 static bool g_between_rounds = false;
+static bool g_skip_ct_wins_round_end = false;
+static bool g_skip_t_wins_round_end = false;
 static ArrayList g_respawn_timers;
 
 static bool g_first_spawn[MAXPLAYERS + 1] = {
@@ -86,6 +88,16 @@ static void Respawn(int userid) {
   g_respawn_timers.Set(userid, timer);
 }
 
+static bool WholeTeamDead(int team) {
+  for (int client = 0; client < MaxClients; client++) {
+    if (IsClientInGame(client) && IsPlayerAlive(client) &&
+        team == GetClientTeam(client)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 //
 // Hooks
 //
@@ -99,6 +111,24 @@ static Action OnPlayerDeath(Event event, const char[] name,
   int userid = GetEventInt(event, "userid");
   if (!userid) {
     return Plugin_Continue;
+  }
+
+  int client = GetClientOfUserId(userid);
+  if (!client) {
+    return Plugin_Continue;
+  }
+
+  int team = GetClientTeam(client);
+  if (team == CS_TEAM_CT) {
+    bool team_dead = WholeTeamDead(team);
+    if (team_dead) {
+      g_skip_t_wins_round_end = true;
+    }
+  } else if (team == CS_TEAM_T) {
+    bool team_dead = WholeTeamDead(team);
+    if (team_dead) {
+      g_skip_ct_wins_round_end = true;
+    }
   }
 
   Respawn(userid);
@@ -125,6 +155,13 @@ static Action OnPlayerSpawn(Event event, const char[] name,
 
   if (IsPlayerAlive(client)) {
     CancelRespawn(userid);
+  }
+
+  int team = GetClientTeam(client);
+  if (team == CS_TEAM_CT) {
+    g_skip_t_wins_round_end = false;
+  } else if (team == CS_TEAM_T) {
+    g_skip_ct_wins_round_end = false;
   }
 
   return Plugin_Continue;
@@ -166,6 +203,20 @@ static Action OnRoundStart(Event event, const char[] name,
 //
 // Forwards
 //
+
+public Action CS_OnTerminateRound(float& delay, CSRoundEndReason& reason) {
+  if (reason == CSRoundEnd_CTWin && g_skip_ct_wins_round_end) {
+    g_skip_ct_wins_round_end = false;
+    return Plugin_Stop;
+  }
+
+  if (reason == CSRoundEnd_TerroristWin && g_skip_t_wins_round_end) {
+    g_skip_ct_wins_round_end = false;
+    return Plugin_Stop;
+  }
+
+  return Plugin_Continue;
+}
 
 public void OnMapEnd() {
   for (int client = 0; client < MAXPLAYERS + 1; client++) {
