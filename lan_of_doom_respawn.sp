@@ -4,7 +4,7 @@
 public const Plugin myinfo = {
     name = "Player Respawn", author = "LAN of DOOM",
     description = "Enables player respawn after death", version = "1.1.0",
-    url = "https://github.com/lanofdoom/counterstrike-respawn"};
+    url = "https://github.com/lanofdoom/counterstrikesource-respawn"};
 
 static ConVar g_respawn_enabled_cvar;
 static ConVar g_respawn_time_cvar;
