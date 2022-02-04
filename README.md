@@ -1,5 +1,5 @@
 # LAN of DOOM respawn plugin
-A SourceMod plugin that respawns players after death for CS:S and CS:GO servers.
+A SourceMod plugin that respawns players after death for CS:S servers.
 
 # Building
 Check out the repository and run the ``./build.sh`` script.
